@@ -1,6 +1,8 @@
 const rp = require('request-promise');
 const cheerio = require('cheerio');
 
+const parsers = require('./src/parsers');
+
 const options = {
   uri: `https://pokemondb.net/pokedex/bulbasaur`,
   transform: function (body) {
@@ -8,15 +10,9 @@ const options = {
   }
 };
 
-const parseWhereToFind = ($) => {
-  return $('.igame.lets-go-eevee').parent().next().text().split(',').map((item) => {
-    return item.trim();
-  });
-};
-
 rp(options)
   .then(($) => {
-    console.log(parseWhereToFind($));
+    console.log(parsers.parseWhereToFind($));
   })
   .catch((err) => {
     console.log(err);
