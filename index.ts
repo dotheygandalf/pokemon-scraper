@@ -2,4 +2,10 @@ import {
   writePokemonList
 } from './src/pokemonList';
 
-writePokemonList();
+import {
+  getAllPokemonData
+} from './src/specificPokemon';
+
+// writePokemonList();
+
+getAllPokemonData();
