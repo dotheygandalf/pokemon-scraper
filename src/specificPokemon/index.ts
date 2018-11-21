@@ -4,8 +4,10 @@ import * as cheerio from 'cheerio';
 var pokemonList = require('../../build/pokemonList.json');
 
 import {
+  parseMoves,
   parseWhereToFind,
-  parseEvolutions
+  parseEvolutions,
+  parseTms
 } from './parsers';
 
 const getPokemonData = (pokemon) => {
@@ -19,7 +21,14 @@ const getPokemonData = (pokemon) => {
 
     rp(options)
       .then(($) => {
+        const tables = [];
+        $('#tab-moves-17 table').each((index, element) => {
+          tables.push($(element));
+        });
+
         const pokemonProperties = {
+          moves: parseMoves($, tables[0]),
+          tms: parseTms($, tables[1]),
           evolutions: parseEvolutions($),
           locations: parseWhereToFind($)
         };
@@ -30,7 +39,6 @@ const getPokemonData = (pokemon) => {
       });
   });
 };
-
 
 export const getAllPokemonData = () => {
   const pokemon = pokemonList[0];
