@@ -5,6 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "ts-node index.ts",
+    "specificPokemon": "ts-node src/specificPokemon/index.ts",
+    "pokemonList": "ts-node src/pokemonList/index.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
