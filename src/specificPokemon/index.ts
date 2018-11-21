@@ -4,7 +4,8 @@ import * as cheerio from 'cheerio';
 var pokemonList = require('../../build/pokemonList.json');
 
 import {
-  parseWhereToFind
+  parseWhereToFind,
+  parseEvolutions
 } from './parsers';
 
 const getPokemonData = (pokemon) => {
@@ -19,29 +20,7 @@ const getPokemonData = (pokemon) => {
     rp(options)
       .then(($) => {
         const pokemonProperties = {
-          evolutions: (() => {
-            const evolutions = [];
-            $('.infocard-list-evo .infocard').each((index, element) => {
-              const name = $(element).find('.ent-name').text();
-
-              if(name === '') {
-                const level = $(element).find('small').text();
-                evolutions[index - 1].level = level.match(/\d+/)[0];
-              }
-
-              const types = [];
-              $(element).find('.itype').each((index, element) => {
-                types.push($(element).text());
-              });
-              evolutions.push({
-                name,
-                types
-              });
-            });
-            return evolutions.filter((item) => {
-              return item.name;
-            });
-          })(),
+          evolutions: parseEvolutions($),
           locations: parseWhereToFind($)
         };
         resolve({...pokemon, ...pokemonProperties});
