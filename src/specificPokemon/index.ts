@@ -1,5 +1,10 @@
+import * as fs from 'fs';
+import * as path from 'path';
+
 import * as rp from 'request-promise';
 import * as cheerio from 'cheerio';
+
+import paths from '../../paths';
 
 var pokemonList = require('../../build/pokemonList.json');
 
@@ -9,11 +14,12 @@ import {
   parseEvolutions,
   parseTms
 } from './parsers';
+import { promises } from 'fs';
 
 const getPokemonData = (pokemon) => {
   return new Promise((resolve, reject) => {
     const options = {
-      uri: `https://pokemondb.net/pokedex/${pokemon.name}`,
+      uri: pokemon.url,
       transform: function (body) {
         return cheerio.load(body);
       }
@@ -29,20 +35,36 @@ const getPokemonData = (pokemon) => {
         const pokemonProperties = {
           moves: parseMoves($, tables[0]),
           tms: parseTms($, tables[1]),
-          evolutions: parseEvolutions($),
+          // evolutions: parseEvolutions($),
           locations: parseWhereToFind($)
         };
         resolve({...pokemon, ...pokemonProperties});
       })
       .catch((err) => {
-        console.log(err);
+        console.log(`error processing: ${pokemon.name}`);
       });
   });
 };
 
 export const getAllPokemonData = () => {
-  const pokemon = pokemonList[0];
-  getPokemonData(pokemon).then((res) => {
-    console.log(JSON.stringify(res, null, 2));
+  const pokemonDetailPromises = pokemonList.map((pokemon) => {
+    return new Promise((resolve, reject) => {
+      getPokemonData(pokemon).then((res) => {
+        resolve(res);
+      });
+    });
   });
+
+  Promise.all(pokemonDetailPromises).then((pokemonList) => {
+    var dir = path.join(paths.basePath, 'build');
+
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir);
+    }
+
+    fs.writeFile(path.join(paths.basePath, 'build', 'pokemonListWithDetails.json'), JSON.stringify(pokemonList, null, 2), () => {
+      console.log('Successfully written pokemon list file');
+    });
+  })
+
 };

@@ -21,7 +21,8 @@ export const getPokemonList = () => {
         $('.ent-name').each((index, element) => {
           pokemons.push({
             number: index + 1,
-            name: $(element).text()
+            name: $(element).text(),
+            url: `https://pokemondb.net${$(element).attr('href')}`
           });
         });
         resolve(pokemons);2
