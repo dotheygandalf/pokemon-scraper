@@ -1,7 +1,11 @@
 
 export const parseWhereToFind = ($) => {
   return $('.igame.lets-go-eevee').parent().next().text().split(',').map((item) => {
-    return item.trim();
+    let location = item.trim();
+    if(isNaN(parseInt(location, 10))) {
+      return location;
+    }
+    return `Route ${parseInt(location, 10)}`;
   });
 };
 
